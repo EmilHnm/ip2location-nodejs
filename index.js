@@ -1,18 +1,21 @@
 const express = require('express');
 const requestIp = require('request-ip');
-
-const app = express ();
-app.use(express.json());
-
 const {IP2Location} = require("ip2location-nodejs");
-const {json} = require("express");
+
+const app = express();
+app.use(express.json());
 
 let ip2location = new IP2Location();
 
 ip2location.open("./IP2LOCATION-LITE.BIN");
 
 app.get('/', (request, response) => {
-    const ipAddress = requestIp.getClientIp(request);
+    let ipAddress = requestIp.getClientIp(request);
+    response.send("Hello, " + ipAddress);
+});
+
+app.get('/ip2location', (request, response) => {
+    let ipAddress = requestIp.getClientIp(request);
 
     let result = ip2location.getAll(ipAddress);
 
