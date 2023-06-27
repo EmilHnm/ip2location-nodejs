@@ -1,0 +1,12 @@
+apps:
+  - script : index.js
+    exec_mode : "cluster"
+    instances : 3
+    name     : 'ip2location'
+    env:
+      NODE_PORT : 2205
+      PORT : 2205
+    autorestart : true
+    restart_delay : 10000
+    max_memory_restart : 1000M
+    log_date_format : MM-DD HH:mm
