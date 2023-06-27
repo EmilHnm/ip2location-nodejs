@@ -15,7 +15,10 @@ app.get('/', (request, response) => {
 });
 
 app.get('/ip2location', (request, response) => {
-    let ipAddress = requestIp.getClientIp(request);
+    let ipAddress = request.query.ip;
+    if (!ipAddress) {
+        ipAddress = requestIp.getClientIp(request);
+    }
 
     let result = ip2location.getAll(ipAddress);
 
