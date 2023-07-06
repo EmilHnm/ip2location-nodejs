@@ -5,12 +5,13 @@ const ip2location = require("./Drivers/ip2location");
 const DriverDoesNotExistException = require("./Exceptions/DriverDoesNotExistException");
 const MissingParameterException = require("./Exceptions/MissingParameterException");
 const maxmind = require("./Drivers/maxmind");
+const ipinfo = require("./Drivers/ipinfo");
 
-const DRIVER_AVAILABLE = ['IP-API', 'IP2LOCATION','MAXMIND'];
+const DRIVER_AVAILABLE = ['IP-API', 'IP2LOCATION','MAXMIND', 'IPINFO'];
 
-const IpInfo = (function() {
+const IpInformation = (function() {
     let ip, driver_index, addition;
-    function IpInfo(ip, driver, ...addition) {
+    function IpInformation(ip, driver, ...addition) {
         if(!ip || !driver) {
             throw new MissingParameterException(['ip', 'driver'])
         }
@@ -22,7 +23,7 @@ const IpInfo = (function() {
         this.driver_index = driver_index;
         this.additional = addition;
     }
-    IpInfo.prototype.get = async function() {
+    IpInformation.prototype.get = async function() {
         switch (this.driver_index) {
             case 0: {
                 try {
@@ -47,11 +48,19 @@ const IpInfo = (function() {
                     throw error;
                 }
             }
+            case 3: {
+                try {
+                    let ipinfo_driver = new ipinfo(this.ip, this.additional[0]);
+                    return await ipinfo_driver.get();
+                } catch (error) {
+                    throw error;
+                }
+            }
             default:
                 break;
         }
     }
-    return IpInfo;
+    return IpInformation;
 })()
 
-module.exports = IpInfo;
+module.exports = IpInformation;

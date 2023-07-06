@@ -1,5 +1,5 @@
 const express = require('express');
-const IpInfo = require('./src');
+const IpInformation = require('./src');
 
 const app = express();
 app.use(express.json());
@@ -15,12 +15,15 @@ app.get('/:driver', (request, response) => {
     let driver = request.params.driver;
     addition = null;
     if (driver.toLocaleLowerCase() === 'maxmind') {
-        addition = './GeoLite2-Country.mmdb'
+        addition = './GeoLite2-Country.mmdb';
     }
     if(driver.toLocaleLowerCase() === 'ip2location') {
-        addition = './IP2LOCATION-LITE.BIN'
+        addition = './IP2LOCATION-LITE.BIN';
     }
-    let infor = (new IpInfo(ipAddress, driver, addition)).get()
+    if(driver.toLocaleLowerCase() === 'ipinfo') {
+        addition = request.query.ipinfoKey;
+    }
+    let infor = (new IpInformation(ipAddress, driver, addition)).get()
     infor.then((data) => {
         return response.json(data)
     })
@@ -30,7 +33,7 @@ app.get('/:driver', (request, response) => {
 })
 
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log("Server Listening on PORT:", PORT);
 });
