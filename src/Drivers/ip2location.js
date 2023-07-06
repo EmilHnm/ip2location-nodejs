@@ -5,11 +5,11 @@ const MissingAdditionException = require("../Exceptions/MissingAdditionException
 
 const ip2location = (function() {
     let ipAddress, filePath;
-    function ip2location(ipAddress, filePath) {
-        if(!filePath)
-            throw new MissingAdditionException('ip2location','file')
+    function ip2location(ipAddress) {
         this.ipAddress = ipAddress;
-        this.filePath = filePath;
+        this.filePath = process.env.IP2LOCATION_FILE;
+        if(!this.filePath)
+            throw new MissingAdditionException('ip2location','file')
         
     }
     ip2location.prototype.get = async function() {

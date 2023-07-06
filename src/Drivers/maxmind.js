@@ -8,17 +8,16 @@ const MissingParameterException = require("../Exceptions/MissingParameterExcepti
 const maxmind = (function() {
     let reader,filePath,ipAddress;
 
-     function maxmind(ipAddress, filePath) {
+     function maxmind(ipAddress) {
         if (!ipAddress) 
             throw new MissingParameterException(['ipAddress']);
-        if(!filePath)
+        this.filePath = process.env.MINDMAX_FILE;   
+        if(!this.filePath)
             throw new MissingAdditionException('maxmind','license key');
-        this.filePath = filePath;        
         this.ipAddress = ipAddress;
     }
 
     maxmind.prototype.get = async function() {
-        
         let reader = await Reader.open(this.filePath);
         let result = await reader.country(this.ipAddress);
         return {

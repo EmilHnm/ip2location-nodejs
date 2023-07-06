@@ -4,7 +4,8 @@ const { IPinfoWrapper } = require("node-ipinfo");
 
 const ipinfo = (function() {
     let ipAddress,ipinfoWrapper;
-    function ipinfo(ipAddress, token) {
+    function ipinfo(ipAddress) {
+        const token = process.env.IPINFO_KEY;
         if(token) {
             this.ipinfoWrapper = new IPinfoWrapper(token);
         }
