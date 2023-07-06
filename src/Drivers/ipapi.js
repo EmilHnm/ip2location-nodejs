@@ -1,0 +1,30 @@
+'use strict'
+const MissingParameterException = require("../Exceptions/MissingParameterException");
+
+const fields = ['status','message','country','countryCode','query']
+
+const ipapi = (function() {
+    let ipAddress;
+
+    function ipapi(ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    ipapi.prototype.get = async function() {
+        if (!this.ipAddress) {
+            throw new MissingParameterException(['ipAddress']);
+        }
+        const url = `http://ip-api.com/json/${this.ipAddress}?fields=${fields.join(',')}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        return {
+            'ip': data.query,
+            'country_name': data.country,
+            'country_code': data.countryCode
+        };
+    };
+
+    return ipapi;
+})();
+
+module.exports = ipapi;
