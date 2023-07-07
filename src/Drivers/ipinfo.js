@@ -1,6 +1,7 @@
 'use strict';
 
 const { IPinfoWrapper } = require("node-ipinfo");
+const DriverErrorException = require("../Exceptions/DriverErrorException");
 
 const ipinfo = (function() {
     let ipAddress,ipinfoWrapper;
@@ -22,6 +23,9 @@ const ipinfo = (function() {
         } 
         let res = await fetch(`https://ipinfo.io/${this.ipAddress}/json`);
         const result = await res.json();
+        if (result.status === 404) {
+            throw new DriverErrorException('info-api', `${result.error.message} on ${this.ipAddress}`)
+        }
         return {
             'ip': result.ip,
             'country_name': result.country,

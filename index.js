@@ -30,7 +30,10 @@ app.get('/:driver', (request, response) => {
         return response.json(data)
     })
     .catch((error) => {
-        return response.json(error)
+        return response.json({
+            error: error.error,
+            message: error.message
+        })
     });
 })
 

@@ -30,9 +30,9 @@ const IpInformation = (function() {
                 case 0: {
                     try {
                         let ipapi_driver = new ipapi(this.ip);
-                        return  await ipapi_driver.get();
+                        let data = await ipapi_driver.get();
+                        return  data;
                     } catch (error) {
-                        
                         if(!this.retry){
                             throw error;
                         }
@@ -44,8 +44,9 @@ const IpInformation = (function() {
                 }
                 case 1: {
                     try {
-                        let ip2location_driver = new ip2location(this.ip)
-                        return ip2location_driver.get();
+                        let ip2location_driver = new ip2location(this.ip);
+                        let data = await ip2location_driver.get();
+                        return data;
                     } catch (error) {
                         if(!this.retry)
                             throw error;
@@ -58,7 +59,8 @@ const IpInformation = (function() {
                 case 2: {
                     try {
                         let maxmind_driver = new maxmind(this.ip);
-                        return await maxmind_driver.get();
+                        let data = await maxmind_driver.get();
+                        return data;
                     } catch (error) {
                         if(!this.retry)
                             throw error;
@@ -71,7 +73,8 @@ const IpInformation = (function() {
                 case 3: {
                     try {
                         let ipinfo_driver = new ipinfo(this.ip);
-                        return await ipinfo_driver.get();
+                        let data  = await ipinfo_driver.get();
+                        return data;
                     } catch (error) {
                         if(!this.retry)
                             throw error;

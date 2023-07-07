@@ -1,5 +1,6 @@
 'use strict'
 const MissingParameterException = require("../Exceptions/MissingParameterException");
+const DriverErrorException = require("../Exceptions/DriverErrorException");
 
 const fields = ['status','message','country','countryCode','query']
 
@@ -17,6 +18,9 @@ const ipapi = (function() {
         const url = `http://ip-api.com/json/${this.ipAddress}?fields=${fields.join(',')}`;
         const res = await fetch(url);
         const data = await res.json();
+        if(data.status === 'fail') {
+            throw new DriverErrorException('ip-api', `${data.message} on ${data.query}`)
+        }
         return {
             'ip': data.query,
             'country_name': data.country,
