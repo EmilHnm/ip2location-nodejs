@@ -22,9 +22,6 @@ app.get('/', (request, response) => {
 app.get('/:driver', (request, response) => {
     let ipAddress = request.query.ip ?? request.ip;
     let driver = request.params.driver;
-    if(driver.toLocaleLowerCase() === 'ipinfo') {
-        addition = request.query.ipinfoKey;
-    }
     let infor = (new IpInformation(ipAddress, driver)).get()
     infor.then((data) => {
         return response.json(data)

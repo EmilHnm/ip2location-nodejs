@@ -7,88 +7,65 @@ const MissingParameterException = require("./Exceptions/MissingParameterExceptio
 const maxmind = require("./Drivers/maxmind");
 const ipinfo = require("./Drivers/ipinfo");
 
-const DRIVER_AVAILABLE = ['IP-API', 'IP2LOCATION','MAXMIND', 'IPINFO'];
+const DRIVER_AVAILABLE = ['IP-API', 'IP2LOCATION', 'MAXMIND', 'IPINFO'];
 
-const IpInformation = (function() {
-    let ip, driver_index, addition, retry;
+const IpInformation = (function () {
+    let ip, driverIndex, addition, retry;
     function IpInformation(ip, driver) {
-        if(!ip) {
+        if (!ip) {
             throw new MissingParameterException(['ip'])
         }
-        let driver_index = DRIVER_AVAILABLE.findIndex((avaiable) => avaiable == driver.toUpperCase())
-        if(driver_index == -1) {
+        let driverIndex = DRIVER_AVAILABLE.findIndex((avaiable) => avaiable == driver.toUpperCase())
+        if (driverIndex == -1) {
             throw new DriverDoesNotExistException(driver);
         }
         this.ip = ip;
-        this.driver_index = driver_index;
+        this.driverIndex = driverIndex;
     }
     IpInformation.prototype.retry = false;
-    IpInformation.prototype.get = async function() {
+    IpInformation.prototype.get = async function () {
         let remaining = [...DRIVER_AVAILABLE];
         do {
-            switch (this.driver_index) {
-                case 0: {
-                    try {
-                        let ipapi_driver = new ipapi(this.ip);
-                        let data = await ipapi_driver.get();
-                        return  data;
-                    } catch (error) {
-                        if(!this.retry){
-                            throw error;
+            try {
+                let data;
+                switch (this.driverIndex) {
+                    case 0:
+                        {
+                            const ipapiDriver = new ipapi(this.ip);
+                            data = await ipapiDriver.get();
+                            break;
                         }
-                        else {
-                            remaining = remaining.filter((driver) => driver != DRIVER_AVAILABLE[this.driver_index]);
-                            this.driver_index = DRIVER_AVAILABLE.findIndex((driver) => driver == remaining[0]);
+                    case 1:
+                        {
+                            const ip2locationDriver = new ip2location(this.ip);
+                            data = await ip2locationDriver.get();
+                            break;
                         }
-                    }
+                    case 2:
+                        {
+                            const maxmindDriver = new maxmind(this.ip);
+                            data = await maxmindDriver.get();
+                            break;
+                        }
+                    case 3:
+                        {
+                            const ipinfoDriver = new ipinfo(this.ip);
+                            data = await ipinfoDriver.get();
+                            break;
+                        }
+                    default:
+                        throw new Error('All drivers errored');
                 }
-                case 1: {
-                    try {
-                        let ip2location_driver = new ip2location(this.ip);
-                        let data = await ip2location_driver.get();
-                        return data;
-                    } catch (error) {
-                        if(!this.retry)
-                            throw error;
-                        else {
-                            remaining = remaining.filter((driver) => driver != DRIVER_AVAILABLE[this.driver_index]);
-                            this.driver_index = DRIVER_AVAILABLE.findIndex((driver) => driver == remaining[0]);
-                        }
-                    }
+                return data;
+            } catch (error) {
+                if (!this.retry) {
+                    throw error;
+                } else {
+                    remaining = remaining.filter((driver) => driver !== DRIVER_AVAILABLE[this.driverIndex]);
+                    this.driverIndex = DRIVER_AVAILABLE.findIndex((driver) => driver === remaining[0]);
                 }
-                case 2: {
-                    try {
-                        let maxmind_driver = new maxmind(this.ip);
-                        let data = await maxmind_driver.get();
-                        return data;
-                    } catch (error) {
-                        if(!this.retry)
-                            throw error;
-                        else {
-                            remaining = remaining.filter((driver) => driver != DRIVER_AVAILABLE[this.driver_index]);
-                            this.driver_index = DRIVER_AVAILABLE.findIndex((driver) => driver == remaining[0]);
-                        }
-                    }
-                }
-                case 3: {
-                    try {
-                        let ipinfo_driver = new ipinfo(this.ip);
-                        let data  = await ipinfo_driver.get();
-                        return data;
-                    } catch (error) {
-                        if(!this.retry)
-                            throw error;
-                        else {
-                            remaining = remaining.filter((driver) => driver != DRIVER_AVAILABLE[this.driver_index]);
-                            this.driver_index = DRIVER_AVAILABLE.findIndex((driver) => driver == remaining[0]);
-                        }
-                    }
-                }
-                default:
-                    throw new Error('All driver errored');
             }
-           
-        } while (remaining.length != 0 && this.retry === true);
+        } while (remaining.length !== 0 && this.retry === true);
     }
     return IpInformation;
 })()
