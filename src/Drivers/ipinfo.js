@@ -6,7 +6,7 @@ const DriverErrorException = require("../Exceptions/DriverErrorException");
 const ipinfo = (function() {
     let ipAddress,ipinfoWrapper;
     function ipinfo(ipAddress) {
-        const token = process.env.IPINFO_KEY;
+        const token = process.env.IPINFO_TOKEN;
         if(token) {
             this.ipinfoWrapper = new IPinfoWrapper(token);
         }
